@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAY: Mindeststandards Diagnostik</title>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    
+    <style>
+        /* CSS-Variablen im Material Design 3 Farbschema (Teal) */
+        :root {
+            --md-color-primary: #006a6a;
+            --md-color-on-primary: #ffffff;
+            --md-color-primary-container: #d2e4e4;
+            --md-color-on-primary-container: #002020;
+            --md-color-surface: #f4fbfb;
+            --md-color-surface-container: #edf5f5;
+            --md-color-background: #f7f9f9;
+            --md-color-on-surface: #191c1c;
+            --md-color-on-surface-variant: #3f4949;
+            --md-color-outline: #6f7979;
+            --md-color-outline-variant: #bec8c8;
+            --md-color-error: #ba1a1a;
+            --md-color-error-container: #ffdad6;
+            
+            --md-elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-color-primary: #80d3d3;
+                --md-color-on-primary: #003737;
+                --md-color-primary-container: #004f4f;
+                --md-color-on-primary-container: #d2e4e4;
+                --md-color-surface: #1e2626;
+                --md-color-surface-container: #191c1c;
+                --md-color-background: #0e1414;
+                --md-color-on-surface: #e0e3e3;
+                --md-color-on-surface-variant: #c0c7c7;
+                --md-color-outline: #899393;
+                --md-color-outline-variant: #3f4949;
+            }
+        }
+
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            text-align: center; 
+            background: var(--md-color-background); 
+            padding: 30px 16px; 
+            margin: 0; 
+            color: var(--md-color-on-surface);
+            transition: background-color 0.3s ease;
+        }
+
+        .card { 
+            background: var(--md-color-surface); 
+            padding: 24px; 
+            border-radius: 28px; 
+            box-shadow: var(--md-elevation-1); 
+            max-width: 500px; 
+            width: 100%; 
+            margin: auto; 
+            box-sizing: border-box; 
+            text-align: left;
+            transition: background-color 0.3s ease;
+        }
+
+        .title-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 16px; 
+            margin-bottom: 8px; 
+        }
+
+        .title-container h2 { 
+            margin: 0; 
+            font-size: 20px; 
+            font-weight: 700;
+            color: var(--md-color-on-surface);
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--md-color-on-surface-variant);
+            margin: 0 0 20px 0;
+            line-height: 1.4;
+            border-bottom: 1px solid var(--md-color-outline-variant);
+            padding-bottom: 12px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--md-color-primary);
+            margin: 20px 0 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Filter-Chips (Kategorie-Wähler) */
+        .chip-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .chip {
+            background: var(--md-color-surface-container);
+            color: var(--md-color-on-surface);
+            border: 1px solid var(--md-color-outline-variant);
+            border-radius: 100px;
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .chip.active {
+            background: var(--md-color-primary-container);
+            color: var(--md-color-on-primary-container);
+            border-color: var(--md-color-primary);
+        }
+
+        /* Checklisten-Elemente */
+        .checklist-group {
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: var(--md-color-surface-container);
+            margin-bottom: 8px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.15s ease;
+            box-sizing: border-box;
+        }
+
+        .checklist-item:hover {
+            background: var(--md-color-primary-container);
+        }
+
+        .checklist-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 1px 0 0 0;
+            accent-color: var(--md-color-primary);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checklist-text {
+            font-size: 14px;
+            line-height: 1.4;
+            color: var(--md-color-on-surface);
+        }
+
+        /* Selektor für 2c-Algorithmen */
+        .algo-select-container {
+            margin: 12px 0;
+            padding: 14px;
+            background: var(--md-color-surface-container);
+            border-radius: 16px;
+            border: 1px dashed var(--md-color-primary);
+        }
+
+        .algo-select-container select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--md-color-outline);
+            background: var(--md-color-surface);
+            color: var(--md-color-on-surface);
+            font-size: 14px;
+            font-weight: 500;
+            box-sizing: border-box;
+        }
+
+        .algo-subgroup {
+            border-left: 3px solid var(--md-color-primary);
+            padding-left: 12px;
+            margin-top: 10px;
+        }
+
+        .algo-subgroup-title {
+            font-size: 13px;
+            font-weight: bold;
+            color: var(--md-color-primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Fortschrittsanzeige */
+        .progress-box {
+            background: var(--md-color-surface-container);
+            border-radius: 20px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            border: 1px solid var(--md-color-outline-variant);
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar-bg {
+            background: var(--md-color-outline-variant);
+            height: 8px;
+            border-radius: 100px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .progress-bar-fill {
+            background: var(--md-color-primary);
+            height: 100%;
+            width: 0%;
+            border-radius: 100px;
+            transition: width 0.3s ease;
+        }
+
+        /* Buttons */
+        button.secondary { 
+            background: transparent; 
+            color: var(--md-color-primary);
+            border: 1px solid var(--md-color-outline);
+            padding: 10px 16px; 
+            font-size: 14px; 
+            font-weight: 500;
+            border-radius: 100px;
+            width: 100%;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        button.secondary:hover { 
+            background: rgba(0, 106, 106, 0.08); 
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 500px) {
+            body { padding: 12px 8px; }
+            .card { padding: 20px 16px; border-radius: 24px; }
+            .title-container h2 { font-size: 18px; }
+        }
+
+        .material-symbols-outlined {
+            font-size: inherit;
+            vertical-align: middle;
+            line-height: 1;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- Titelbereich -->
+        <div class="title-container">
+            <span class="material-symbols-outlined" style="font-size: 32px; color: #dc2626;">clinical_notes</span>
+            <h2>Auswertung Notfallprotokoll</h2>
+        </div>
+        <p class="subtitle">
+           Checkliste für bayerische Johanniter-Notfallprotokolle.
+        </p>
+
+        <!-- Situations-Filter (Chips) -->
+        <label style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 8px; text-transform: uppercase; color: var(--md-color-outline);">
+            Zusätzliche Indikationen / Befunde:
+        </label>
+        <div class="chip-container">
+            <div class="chip" data-target="sec-b" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">air</span> B-Symptomatik
+            </div>
+            <div class="chip" data-target="sec-c" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">monitor_heart</span> C-Symptomatik
+            </div>
+            <div class="chip" data-target="sec-d" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">psychology</span> D-Symptomatik
+            </div>
+            <div class="chip" data-target="sec-apoplex" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">emergency</span> Apoplex-Verdacht
+            </div>
+            <div class="chip" data-target="sec-trauma" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">personal_injury</span> Trauma
+            </div>
+            <div class="chip" data-target="sec-opiat" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">vaccines</span> Opiatgabe
+            </div>
+            <div class="chip" data-target="sec-2c" onclick="toggleSection(this)">
+                <span class="material-symbols-outlined" style="font-size: 16px;">medical_services</span> 2c-Algorithmus
+            </div>
+        </div>
+
+        <!-- Fortschrittsanzeige -->
+        <div class="progress-box">
+            <div class="progress-info">
+                <span>Erfüllte Standards:</span>
+                <span id="progress-text">0 / 0 (0%)</span>
+            </div>
+            <div class="progress-bar-bg">
+                <div id="progress-bar" class="progress-bar-fill"></div>
+            </div>
+        </div>
+
+        <!-- Checklisten-Abschnitte -->
+        <form id="checklist-form">
+            
+            <!-- Standard bei allen Patienten -->
+            <div class="checklist-group" id="sec-standard">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">patient_list</span> Standard (Alle Patienten)
+                </div>
+                
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Pulsfrequenz</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Recap-Zeit oder Blutdruck (systolisch)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Bewusstseinszustand (z. B. wach/orientiert) oder Glasgow Coma Scale</span>
+                </label>
+
+                <!-- Pflichtangaben zur Dokumentation -->
+                <div style="margin: 18px 0 8px 0; font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--md-color-outline); border-top: 1px dashed var(--md-color-outline-variant); padding-top: 12px; display: flex; align-items: center; gap: 4px;">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">description</span> Pflicht-Dokumentation (Immer erforderlich)
+                </div>
+
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Uhrzeiten erfasst (Alarm, E.-an, Pat.-an, E.-ab, KH an, Übergabe, Ende)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Arbeitsdiagnose dokumentiert</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Richtige Protokollart gewählt (Notfall- oder Krankentransport)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Notfallgeschehen nachvollziehbar und ausreichend beschrieben</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Behandlung angemessen und ausreichend beschrieben</span>
+                </label>
+            </div>
+
+            <!-- B-Symptomatik -->
+            <div class="checklist-group hidden" id="sec-b">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">air</span> B-Symptomatik
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Sauerstoffsättigung</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Atemfrequenz</span>
+                </label>
+            </div>
+
+            <!-- C-Symptomatik -->
+            <div class="checklist-group hidden" id="sec-c">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">monitor_heart</span> C-Symptomatik
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Blutdruck (systolisch und diastolisch)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">EKG (min. 4-Kanal; bei AP-Beschwerden/ACS-Verdacht min. 12-Kanal)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Sauerstoffsättigung</span>
+                </label>
+            </div>
+
+            <!-- D-Symptomatik -->
+            <div class="checklist-group hidden" id="sec-d">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">psychology</span> D-Symptomatik
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Blutdruck (systolisch und diastolisch)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Blutzucker</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Glasgow Coma Scale</span>
+                </label>
+            </div>
+
+            <!-- Verdacht auf Apoplex -->
+            <div class="checklist-group hidden" id="sec-apoplex">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">emergency</span> Verdacht auf Apoplex
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Anwendung BE-FAST-Schema (Balance, Eyes, Face, Arm, Speech, Time)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Bewusstseinsstörung?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">starker Kopfschmerz?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">akuter Schwindel?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Sehstörung?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Blickwendung?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Symptombeginn?</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Antikoagulation?</span>
+                </label>
+            </div>
+
+            <!-- Trauma -->
+            <div class="checklist-group hidden" id="sec-trauma">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">personal_injury</span> Trauma
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Ausschluss kritische Blutung</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Numerische Rating-Skala</span>
+                </label>
+            </div>
+
+            <!-- Opiatgabe -->
+            <div class="checklist-group hidden" id="sec-opiat">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">vaccines</span> Vor/Nach jeder Opiatgabe
+                </div>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Numerische Rating-Skala</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Blutdruck (systolisch und diastolisch)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">EKG (vor Gabe und während des kompletten Verlaufs)</span>
+                </label>
+                <label class="checklist-item">
+                    <input type="checkbox" onchange="updateProgress()">
+                    <span class="checklist-text">Sauerstoffsättigung (vor Gabe und durchgehend bis Einsatzende)</span>
+                </label>
+            </div>
+
+            <!-- 2c-Algorithmus -->
+            <div class="checklist-group hidden" id="sec-2c">
+                <div class="section-title">
+                    <span class="material-symbols-outlined">medical_services</span> Bei 2c-Algorithmus
+                </div>
+                
+                <div class="algo-select-container">
+                    <label for="algo-select" style="display: block; font-size: 12px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; color: var(--md-color-outline);">
+                        Algorithmus auswählen:
+                    </label>
+                    <select id="algo-select" onchange="selectAlgo(this.value)">
+                        <option value="">-- Bitte wählen --</option>
+                        <option value="algo-hypoxaemie">Moderate Hypoxämie (O2-Gabe)</option>
+                        <option value="algo-absaugen">Sekret in Trachealkanüle (Absaugen)</option>
+                        <option value="algo-hypoglykaemie">Hypoglykämie (Glukose/Thiamin)</option>
+                        <option value="algo-trauma-schmerz">Traumatischer Schmerz (Analgesie/Lagerung)</option>
+                        <option value="algo-abdominalschmerz">Akuter Abdominalschmerz (Analgesie)</option>
+                        <option value="algo-sepsis">Verdacht auf Sepsis (Infusionstherapie)</option>
+                        <option value="algo-zustandsverschlechterung">Zustandsverschlechterung (Infusionstherapie)</option>
+                        <option value="algo-verletzte-person-geriatrisch">Verletzte Person (Geriatrischer Patient)</option>
+                        <option value="algo-verletzte-person-nicht-geriatrisch">Verletzte Person (Nicht-geriatrischer Patient)</option>
+                    </select>
+                </div>
+
+                <!-- Unter-Checkliste 1: Moderate Hypoxämie -->
+                <div class="algo-subgroup hidden" id="algo-hypoxaemie">
+                    <div class="algo-subgroup-title">Doku: Moderate Hypoxämie</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Initialer SpO2-Wert kleiner als 94 % dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Risikofaktoren für hyperkapnisches Atemversagen geprüft (COPD, Bronchiektasen, Adipositas BMI > 40, Mukoviszidose, neuromuskuläre Erkr., Thoraxdeformität)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über Sauerstoffgabe erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Sauerstoffgabe titriert (Ohne Risiko: 4 l/min via Nasenbrille [Ziel 94-98%]; Mit Risiko bei SpO2 < 88%: 2 l/min + LTOT [Ziel 88-92%])</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Verlaufskontrolle: Ziel-SpO2 von mindestens 94 % (ohne Risiko) bzw. mindestens 88 % (mit Risiko) dokumentiert</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 2: Sekret in Trachealkanüle -->
+                <div class="algo-subgroup hidden" id="algo-absaugen">
+                    <div class="algo-subgroup-title">Doku: Delegation von Absaugen</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Stabiles Tracheostoma verifiziert (Anlage vor mind. 14 Tagen, Kanülenwechsel bereits problemlos ohne Hilfsmittel erfolgt)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Atembehinderung dokumentiert (z. B. Hustenreiz, SpO2-Abfall >= 5 %punkte, Sekretverlegung, V.a. Aspiration, Unbehagen)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über Absaugvorgang erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Präoxygenierung über Trachealkanüle erfolgt (max. O2-Fluss für 1 Minute)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Absaugen dokumentiert (max. 2 Versuche à 15 Sek. innerhalb von 5 Min.)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Postoxygenierung für 1 Minute fortgeführt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Reevaluation nach 5 Min. dokumentiert (Atembehinderung gelöst?)</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 3: Hypoglykämie -->
+                <div class="algo-subgroup hidden" id="algo-hypoglykaemie">
+                    <div class="algo-subgroup-title">Doku: Hypoglykämie-Therapie</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">BZ < 70 mg/dl und klinische Manifestation der Hypoglykämie verifiziert (Schwitzen, Zittern, Verwirrtheit, Heißhunger etc.)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Prüfung der sicheren Schluckfähigkeit dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Therapieweg dokumentiert (Schluckfähig: Glukose 30 g p.o. / Nicht schluckfähig: IV-Zugang max. 2 Versuche)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Verdacht auf schwere Mangelernährung geprüft (Kachexie, Alkoholabusus, chron. Gastritis, CED, langanhaltendes Erbrechen)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Bei Mangelernährung: Gabe von Thiamin 100 mg langsam IV erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Gabe von Glukose 40% 50 ml IV zu schnelllaufender Infusion erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Reevaluation nach 5 (IV) bzw. 15 (p.o.) Min. dokumentiert (erneuter BZ, Symptombesserung)</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 4: Traumatischer Schmerz -->
+                <div class="algo-subgroup hidden" id="algo-trauma-schmerz">
+                    <div class="algo-subgroup-title">Doku: Schmerztherapie (Trauma)</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Akutes Trauma oder thermische Verletzung dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Ausschluss von Schockraum-A-Indikation und kritischem xABCDE-Zustand verifiziert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Sämtliche Ausschlusskriterien für Analgesie geprüft (grob dislozierte Fraktur, Beckenverletzung, pDMS-Defizit, Verbrennung > 10%, Inhalationstrauma etc.)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Schmerzerfassung mittels NRS erfolgt (Indikation: nicht tolerabler Schmerz)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Medikamente durchgeführt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">IV-Zugang (max. 2 Versuche) und Gabe von 7,5 mg Piritramid in 100 ml NaCl 0,9 % als Kurzinfusion über mind. 5 Min. dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Reevaluation: Schmerz nach Gabe tolerabel? Bei Frakturverdacht achsengerechte Lagerung erfolgt?</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 5: Abdominalschmerz -->
+                <div class="algo-subgroup hidden" id="algo-abdominalschmerz">
+                    <div class="algo-subgroup-title">Doku: Schmerztherapie (Abdomen)</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Akuter Bauchschmerz dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Kritisches xABCDE-Problem ausgeschlossen</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Ausschlusskriterien für Analgesie geprüft (blutiger Stuhl/Erbrechen, Aortenaneurysma, Schwangerschaft, Thoraxschmerz, ST-Strecken-Veränderungen im 12-Kanal-EKG)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Schmerzerfassung mittels NRS dokumentiert (nicht tolerabler Schmerz)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Medikamente erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">IV-Zugang (max. 2 Versuche) und Gabe von 7,5 mg Piritramid in 100 ml NaCl 0,9 % als Kurzinfusion über mind. 5 Min. dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Reevaluation: Erreichen eines tolerablen Schmerzzustands dokumentiert</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 6: Verdacht auf Sepsis -->
+                <div class="algo-subgroup hidden" id="algo-sepsis">
+                    <div class="algo-subgroup-title">Doku: Verdacht auf Sepsis</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Akut reduzierter Allgemeinzustand dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Meningismus klinisch geprüft und ausgeschlossen</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Vereinfachter NEWS-2 berechnet (Score mindestens 5 Punkte)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Spezifischer Hinweis auf Infektion dokumentiert (z. B. Atemwege, Harnwege, intraabdominal, Wunden, Fremdkörper etc.)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Infusion erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">IV-Zugang (max. 2 Versuche) und Einleitung einer Infusionstherapie mit 500 ml Vollelektrolytlösung erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Voranmeldung in der Klinik mit dem Stichwort „V.a. Sepsis“ dokumentiert</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 7: Zustandsverschlechterung -->
+                <div class="algo-subgroup hidden" id="algo-zustandsverschlechterung">
+                    <div class="algo-subgroup-title">Doku: Zustandsverschlechterung</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Notfallpatient mit Symptombezogenem Zustand identifiziert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Vereinfachter NEWS-2 berechnet (Summe mindestens 5 Punkte ODER Roter Warnwert [3 Punkte bei einem einzelnen Parameter])</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Infusion durchgeführt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">IV-Zugang (max. 2 Versuche) etabliert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Langsame Infusion einer Vollelektrolytlösung gestartet</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 8: Verletzte Person (Geriatrischer Patient) -->
+                <div class="algo-subgroup hidden" id="algo-verletzte-person-geriatrisch">
+                    <div class="algo-subgroup-title">Doku: Verletzter geriatrischer Patient</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Geriatrischer Status verifiziert (>= 80 Jahre oder >= 70 Jahre mit geriatrietypischer Multimorbidität [mind. 3 chronische Erkrankungen])</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Relevantes Trauma, Auffindesituation und Sturzhergang dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Ausschluss kritischer Patient und xABCDE-Problem (falls zutreffend, andernfalls Notarzt-Anforderung)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Indikationsstellung verifiziert: Mind. 2 verletzte Körperregionen (mehr als oberflächlich) ODER SHT mit GCS 13-15 ODER Unfallmechanismus (Schockraum-Indikation)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Infusion erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Gabe von Vollelektrolytlösung über 2c IV-Zugang (max. 2 Versuche) dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Voranmeldung an das TraumaZentrum („Schockraum B“ bzw. „geriatrisches leichtes SHT“) und Transport erfolgt</span>
+                    </label>
+                </div>
+
+                <!-- Unter-Checkliste 9: Verletzte Person (Nicht-geriatrischer Patient) -->
+                <div class="algo-subgroup hidden" id="algo-verletzte-person-nicht-geriatrisch">
+                    <div class="algo-subgroup-title">Doku: Verletzter nicht-geriatrischer Patient</div>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Status Nicht-Geriatrisch verifiziert (unter 80 Jahre bzw. unter 70 Jahre ohne Multimorbidität)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Relevantes Trauma dokumentiert</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Schockraum-Indikation nach Unfallmechanismus zwingend erfüllt und dokumentiert (Sturz > 3m, Großtierunfall, oder schwerer KFZ-Unfall)</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Patientenaufklärung über IV-Zugang und Infusion erfolgt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">2c IV-Zugang (max. 2 Versuche) und langsame Infusion einer Vollelektrolytlösung durchgeführt</span>
+                    </label>
+                    <label class="checklist-item">
+                        <input type="checkbox" onchange="updateProgress()">
+                        <span class="checklist-text">Voranmeldung an das TraumaZentrum mit dem Stichwort „Schockraum B“ verifiziert und dokumentiert</span>
+                    </label>
+                </div>
+
+            </div>
+
+            <!-- Zurücksetzen-Button -->
+            <button type="button" class="secondary" style="margin-top: 10px;" onclick="resetChecklist()">
+                <span class="material-symbols-outlined">restart_alt</span> Checkliste zurücksetzen
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Sektionen ein- und ausblenden
+        function toggleSection(chip) {
+            const targetId = chip.getAttribute('data-target');
+            const targetSection = document.getElementById(targetId);
+            
+            if (chip.classList.contains('active')) {
+                chip.classList.remove('active');
+                targetSection.classList.add('hidden');
+                // Checkboxen in ausgeblendeten Sektionen deaktivieren
+                const checkboxes = targetSection.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+                
+                // Falls 2c-Sektion geschlossen wird, Selektor zurücksetzen
+                if (targetId === 'sec-2c') {
+                    document.getElementById('algo-select').value = '';
+                    selectAlgo('');
+                }
+            } else {
+                chip.classList.add('active');
+                targetSection.classList.remove('hidden');
+            }
+            updateProgress();
+        }
+
+        // Steuerung der 2c Unter-Algorithmen
+        function selectAlgo(algoId) {
+            // Alle Untergruppen ausblenden
+            const subGroups = document.querySelectorAll('.algo-subgroup');
+            subGroups.forEach(group => {
+                group.classList.add('hidden');
+                // Checkboxen in ausgeblendeten Untergruppen deaktivieren
+                const checkboxes = group.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(cb => cb.checked = false);
+            });
+
+            // Ausgewählte Untergruppe anzeigen
+            if (algoId) {
+                const targetGroup = document.getElementById(algoId);
+                if (targetGroup) {
+                    targetGroup.classList.remove('hidden');
+                }
+            }
+            updateProgress();
+        }
+
+        // Fortschrittsberechnung (berücksichtigt nur sichtbare Elemente)
+        function updateProgress() {
+            const allCheckboxes = document.querySelectorAll('#checklist-form input[type="checkbox"]');
+            let totalCheckboxes = 0;
+            let checkedCheckboxes = 0;
+
+            allCheckboxes.forEach(cb => {
+                // Nur zählen, wenn das Element nicht unsichtbar oder in einem ausgeblendeten Bereich ist
+                if (!cb.closest('.hidden')) {
+                    totalCheckboxes++;
+                    if (cb.checked) {
+                        checkedCheckboxes++;
+                    }
+                }
+            });
+
+            const progressPercent = totalCheckboxes > 0 ? Math.round((checkedCheckboxes / totalCheckboxes) * 100) : 0;
+            
+            // UI aktualisieren
+            document.getElementById('progress-text').innerText = `${checkedCheckboxes} / ${totalCheckboxes} (${progressPercent}%)`;
+            document.getElementById('progress-bar').style.width = `${progressPercent}%`;
+        }
+
+        // Checkliste zurücksetzen
+        function resetChecklist() {
+            // Alle Checkboxen demarkieren
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
+
+            // Alle optionalen Sektionen ausblenden und Chips zurücksetzen
+            const chips = document.querySelectorAll('.chip');
+            chips.forEach(chip => chip.classList.remove('active'));
+
+            const optionalGroups = document.querySelectorAll('.checklist-group:not(#sec-standard)');
+            optionalGroups.forEach(group => group.classList.add('hidden'));
+
+            // 2c Selektor zurücksetzen
+            document.getElementById('algo-select').value = '';
+            selectAlgo('');
+
+            updateProgress();
+        }
+
+        // Initiale Berechnung beim Laden
+        window.addEventListener('DOMContentLoaded', () => {
+            updateProgress();
+        });
+    </script>
+</body>
+</html>
